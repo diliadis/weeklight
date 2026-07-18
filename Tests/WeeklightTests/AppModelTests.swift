@@ -228,10 +228,16 @@ struct AppModelTests {
             at: start.addingTimeInterval(10 * 60),
             playsCompletionSound: false
         )
-        #expect(fixture.model.activeRemainingDuration == 20 * 60)
+        let activeRemainingDuration = try #require(
+            fixture.model.activeRemainingDuration
+        )
+        #expect(activeRemainingDuration == 20 * 60)
 
         fixture.model.pauseTimer(at: start.addingTimeInterval(10 * 60))
-        #expect(fixture.model.pausedCountdownSeconds == 20 * 60)
+        let pausedCountdownSeconds = try #require(
+            fixture.model.pausedCountdownSeconds
+        )
+        #expect(pausedCountdownSeconds == 20 * 60)
 
         fixture.model.resumeTimer(at: start.addingTimeInterval(15 * 60))
         fixture.model.refreshTimer(
@@ -263,8 +269,11 @@ struct AppModelTests {
             )
         )
         #expect(fixture.notifications.lastProjectName == project.name)
-        #expect(fixture.notifications.lastSchedule?.completionDelay == 30 * 60)
-        #expect(fixture.notifications.lastSchedule?.finishingSoonDelay == 27 * 60)
+        let schedule = try #require(fixture.notifications.lastSchedule)
+        let completionDelay = try #require(schedule.completionDelay)
+        let finishingSoonDelay = try #require(schedule.finishingSoonDelay)
+        #expect(completionDelay == 30 * 60)
+        #expect(finishingSoonDelay == 27 * 60)
 
         fixture.model.pauseTimer(at: start.addingTimeInterval(5 * 60))
         #expect(fixture.notifications.cancelCount > 0)

@@ -12,7 +12,7 @@ struct TimerNotificationPolicyTests {
     )
 
     @Test("A countdown schedules finishing and completion alerts")
-    func countdownSchedule() {
+    func countdownSchedule() throws {
         let schedule = TimerNotificationPolicy.schedule(
             countdownDuration: 30 * 60,
             elapsedDuration: 10 * 60,
@@ -21,13 +21,15 @@ struct TimerNotificationPolicyTests {
             preferences: enabled
         )
 
-        #expect(schedule.finishingSoonDelay == 17 * 60)
-        #expect(schedule.completionDelay == 20 * 60)
+        let finishingSoonDelay = try #require(schedule.finishingSoonDelay)
+        let completionDelay = try #require(schedule.completionDelay)
+        #expect(finishingSoonDelay == 17 * 60)
+        #expect(completionDelay == 20 * 60)
         #expect(schedule.allocationExceededDelay == nil)
     }
 
     @Test("Resuming inside the warning window schedules an immediate warning")
-    func resumedCountdownSchedule() {
+    func resumedCountdownSchedule() throws {
         let schedule = TimerNotificationPolicy.schedule(
             countdownDuration: 30 * 60,
             elapsedDuration: 28 * 60,
@@ -36,12 +38,14 @@ struct TimerNotificationPolicyTests {
             preferences: enabled
         )
 
-        #expect(schedule.finishingSoonDelay == 1)
-        #expect(schedule.completionDelay == 2 * 60)
+        let finishingSoonDelay = try #require(schedule.finishingSoonDelay)
+        let completionDelay = try #require(schedule.completionDelay)
+        #expect(finishingSoonDelay == 1)
+        #expect(completionDelay == 2 * 60)
     }
 
     @Test("A stopwatch schedules the future allocation crossing")
-    func allocationSchedule() {
+    func allocationSchedule() throws {
         let schedule = TimerNotificationPolicy.schedule(
             countdownDuration: nil,
             elapsedDuration: 15 * 60,
@@ -52,11 +56,14 @@ struct TimerNotificationPolicyTests {
 
         #expect(schedule.finishingSoonDelay == nil)
         #expect(schedule.completionDelay == nil)
-        #expect(schedule.allocationExceededDelay == 45 * 60)
+        let allocationExceededDelay = try #require(
+            schedule.allocationExceededDelay
+        )
+        #expect(allocationExceededDelay == 45 * 60)
     }
 
     @Test("A timer at its allocation boundary warns on the next second")
-    func exactAllocationBoundary() {
+    func exactAllocationBoundary() throws {
         let schedule = TimerNotificationPolicy.schedule(
             countdownDuration: nil,
             elapsedDuration: 0,
@@ -65,7 +72,10 @@ struct TimerNotificationPolicyTests {
             preferences: enabled
         )
 
-        #expect(schedule.allocationExceededDelay == 1)
+        let allocationExceededDelay = try #require(
+            schedule.allocationExceededDelay
+        )
+        #expect(allocationExceededDelay == 1)
     }
 
     @Test("Allocation alerts do not escape the current week or outlive a countdown")
