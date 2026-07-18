@@ -2,14 +2,12 @@ import Testing
 @testable import Weeklight
 
 struct DurationTextTests {
-    @Test("Compact durations omit empty units", arguments: [
-        (0.0, "0m"),
-        (45.0 * 60, "45m"),
-        (2.0 * 60 * 60, "2h"),
-        (2.0 * 60 * 60 + 5 * 60, "2h 5m")
-    ])
-    func compact(duration: Double, expected: String) {
-        #expect(DurationText.compact(duration) == expected)
+    @Test("Compact durations omit empty units")
+    func compact() {
+        #expect(DurationText.compact(0) == "0m")
+        #expect(DurationText.compact(45 * 60) == "45m")
+        #expect(DurationText.compact(2 * 60 * 60) == "2h")
+        #expect(DurationText.compact(2 * 60 * 60 + 5 * 60) == "2h 5m")
     }
 
     @Test("Clock durations use a stable monospaced representation")

@@ -119,7 +119,10 @@ struct WeeklightVerification {
             ),
             "Countdowns must not warn too early"
         )
-        check(DurationText.compact(7_500) == "2h 5m", "Compact duration formatting")
+        check(DurationText.compact(0) == "0m", "Zero duration formatting")
+        check(DurationText.compact(45 * 60) == "45m", "Minute-only duration formatting")
+        check(DurationText.compact(2 * 60 * 60) == "2h", "Hour-only duration formatting")
+        check(DurationText.compact(7_500) == "2h 5m", "Mixed duration formatting")
         check(DurationText.clock(3_661) == "01:01:01", "Timer clock formatting")
         check(
             DurationText.countdownClock(59.1) == "00:01:00",
