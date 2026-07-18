@@ -15,6 +15,19 @@ MODULE_CACHE="$PROJECT_DIR/.build/clang"
 APP_PATH="$PROJECT_DIR/dist/Weeklight.app"
 ICON_SOURCE="$PROJECT_DIR/Support/AppIcon/WeeklightIcon.png"
 ICON_RESOURCE="$PROJECT_DIR/Support/AppIcon/Weeklight.icns"
+SOURCE_INFO_PLIST="$PROJECT_DIR/Support/Info.plist"
+APP_VERSION="${WEEKLIGHT_VERSION:-$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$SOURCE_INFO_PLIST")}"
+BUILD_NUMBER="${WEEKLIGHT_BUILD_NUMBER:-$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$SOURCE_INFO_PLIST")}"
+
+if [[ ! "$APP_VERSION" =~ ^[0-9]+(\.[0-9]+){0,2}$ ]]; then
+  echo "WEEKLIGHT_VERSION must contain one to three numeric components (received: $APP_VERSION)" >&2
+  exit 1
+fi
+
+if [[ ! "$BUILD_NUMBER" =~ ^[0-9]+(\.[0-9]+){0,2}$ ]]; then
+  echo "WEEKLIGHT_BUILD_NUMBER must contain one to three numeric components (received: $BUILD_NUMBER)" >&2
+  exit 1
+fi
 
 mkdir -p "$CACHE_PATH" "$MODULE_CACHE" "$PROJECT_DIR/dist"
 
@@ -57,8 +70,15 @@ rm -rf "$APP_PATH"
 mkdir -p "$APP_PATH/Contents/MacOS"
 mkdir -p "$APP_PATH/Contents/Resources"
 cp "$BINARY_PATH" "$APP_PATH/Contents/MacOS/Weeklight"
-cp "$PROJECT_DIR/Support/Info.plist" "$APP_PATH/Contents/Info.plist"
+cp "$SOURCE_INFO_PLIST" "$APP_PATH/Contents/Info.plist"
 cp "$ICON_RESOURCE" "$APP_PATH/Contents/Resources/Weeklight.icns"
+
+/usr/libexec/PlistBuddy \
+  -c "Set :CFBundleShortVersionString $APP_VERSION" \
+  "$APP_PATH/Contents/Info.plist"
+/usr/libexec/PlistBuddy \
+  -c "Set :CFBundleVersion $BUILD_NUMBER" \
+  "$APP_PATH/Contents/Info.plist"
 
 codesign \
   --force \
@@ -66,4 +86,4 @@ codesign \
   --entitlements "$PROJECT_DIR/Support/Weeklight.entitlements" \
   "$APP_PATH"
 
-echo "Created $APP_PATH"
+echo "Created $APP_PATH (version $APP_VERSION, build $BUILD_NUMBER)"

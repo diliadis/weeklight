@@ -12,6 +12,20 @@ want a wider view.
 The project is written in Swift and SwiftUI, uses Core Data for persistence,
 and has no third-party runtime dependencies.
 
+## Downloads
+
+Tagged builds are available on the
+[GitHub Releases page](https://github.com/diliadis/weeklight/releases). Choose
+`arm64` for Apple-silicon Macs or `x86_64` for Intel Macs. Each release also
+contains a SHA-256 checksum, and its ZIP archives have GitHub build-provenance
+attestations.
+
+These community builds are ad-hoc signed and are not Apple-notarized. On first
+launch, move Weeklight to Applications, Control-click it, choose **Open**, and
+confirm the prompt. macOS may instead require approval under **System Settings
+→ Privacy & Security**. This extra step is expected until the project uses an
+Apple Developer ID and notarization.
+
 ## Features
 
 - Project creation, color coding, editing, and non-destructive archiving
@@ -97,10 +111,24 @@ legacy session notes.
 
 ## Distribution
 
-The included bundle is intended for local development. Before distributing a
-release, replace the bundle identifier if necessary, sign with an Apple Developer
-identity, and complete Apple's notarization or App Store workflow. The source
-icon and generated Retina resource live in `Support/AppIcon/`.
+Every successful push to `main` produces a downloadable Apple-silicon
+development artifact retained by GitHub Actions for 14 days. A version tag such
+as `v1.1.0` runs the full test suite and publishes permanent Apple-silicon and
+Intel ZIPs, checksum files, generated release notes, and build attestations.
+Prerelease tags such as `v1.2.0-beta.1` create GitHub prereleases.
+
+To verify a downloaded archive from its containing directory:
+
+```bash
+shasum -a 256 -c Weeklight-v1.1.0-macos-arm64.zip.sha256
+gh attestation verify Weeklight-v1.1.0-macos-arm64.zip \
+  --repo diliadis/weeklight
+```
+
+Maintainer instructions are in [RELEASING.md](RELEASING.md). The source icon
+and generated Retina resource live in `Support/AppIcon/`. Developer ID signing
+and notarization can be added to the same workflow later without changing the
+release format.
 
 ## Contributing and security
 

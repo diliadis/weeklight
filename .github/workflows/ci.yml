@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Show toolchain
         run: swift --version
@@ -40,3 +40,16 @@ jobs:
           test -x dist/Weeklight.app/Contents/MacOS/Weeklight
           plutil -lint dist/Weeklight.app/Contents/Info.plist
           codesign --verify --deep --strict dist/Weeklight.app
+
+      - name: Package development build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: ./Scripts/package-release.sh "main-${GITHUB_SHA::7}" arm64
+
+      - name: Upload development build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v7
+        with:
+          name: Weeklight-main-${{ github.sha }}-macos-arm64
+          path: release/*
+          if-no-files-found: error
+          retention-days: 14

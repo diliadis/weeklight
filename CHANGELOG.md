@@ -5,6 +5,12 @@ All notable changes to Weeklight are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Tag-driven GitHub releases with native Apple-silicon and Intel archives,
+  SHA-256 checksums, and build-provenance attestations
+- Downloadable development builds for successful pushes to `main`
+
 ## [1.0.0] - 2026-07-18
 
 ### Added

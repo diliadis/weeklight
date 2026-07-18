@@ -4,6 +4,7 @@
 .build/
 .swiftpm/
 dist/
+release/
 DerivedData/
 *.xcarchive
 *.xcuserstate
